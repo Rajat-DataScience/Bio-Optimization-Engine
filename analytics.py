@@ -4,10 +4,10 @@ import os
 
 # --- INTELLIGENT PATH FINDING ---
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-FILE_PATH = os.path.join(SCRIPT_DIR, 'Master_Data.xlsx')
+FILE_PATH = os.path.join(SCRIPT_DIR, 'Master_Data.xlsm') # Updated to .xlsm just in case
 
 def analyze_performance():
-    print(f"--- 🧠 STARTING BIO-INTELLIGENCE ANALYSIS (V2.0) ---")
+    print(f"--- 🧠 STARTING BIO-INTELLIGENCE ANALYSIS (V3.0) ---")
     
     # 1. Load Data
     try:
@@ -21,7 +21,6 @@ def analyze_performance():
     daily['Date'] = pd.to_datetime(daily['Date'], dayfirst=True)
     workout['Date'] = pd.to_datetime(workout['Date'], dayfirst=True)
     
-    # Clean Missing Data
     if 'Caffeine_Mg' in daily.columns: daily['Caffeine_Mg'] = daily['Caffeine_Mg'].fillna(0)
     if 'Screen_Time_Phone' in daily.columns: daily['Screen_Time_Phone'] = daily['Screen_Time_Phone'].fillna(0)
     workout = workout.ffill()
@@ -33,28 +32,31 @@ def analyze_performance():
         print("⚠️ No matching data found! Check dates.")
         return
 
-    # --- THE UPGRADE: 1RM CALCULATION (Epley Formula) ---
-    # 1RM = Weight * (1 + Reps/30)
+    # Strength Calculation
     merged['1RM_Est'] = merged['Weight_KG'] * (1 + merged['Reps'] / 30)
     merged['Volume'] = merged['Weight_KG'] * merged['Reps']
     
-    print(f"✅ Calculated Strength Metrics for {len(merged)} sets.")
-
-    # --- 4. NEW DASHBOARD ---
+    # --- 4. GENERATE DASHBOARD ---
     
-    # Graph 1: The "True Strength" Trend (New!)
-    # This shows your theoretical max strength rising over time
-    fig1 = px.scatter(merged, x="Date", y="1RM_Est", color="Exercise_Name", size="RPE",
-                     title="📈 True Strength Trend (Estimated 1RM)", template="plotly_dark")
+    # Graph 1: True Strength (The Line of Progress)
+    fig1 = px.scatter(merged, x="Date", y="1RM_Est", color="Exercise_Name", trendline="lowess",
+                     title="📈 Strength Prediction (1RM Trend)", template="plotly_dark")
     fig1.show()
 
-    # Graph 2: Screen Time vs Recovery
+    # Graph 2: Digital Toxicity (The Bad Habits)
     if 'Screen_Time_Phone' in merged.columns:
-        fig2 = px.scatter(merged, x="Screen_Time_Phone", y="Sleep_Hours", size="Caffeine_Mg", color="Physical_Condition",
-                        title="📱 Digital Toxicity Analysis", template="plotly_dark")
+        fig2 = px.scatter(merged, x="Screen_Time_Phone", y="Sleep_Hours", color="Physical_Condition",
+                        title="📱 Digital Toxicity (Screen Time vs Sleep)", template="plotly_dark")
         fig2.show()
 
-    print("✅ Dashboard V2.0 Generated!")
+    # Graph 3: Consistency Streak (The Chain) - NEW!
+    # Summing up total volume per day to show "Effort Spikes"
+    daily_volume = merged.groupby('Date')['Volume'].sum().reset_index()
+    fig3 = px.bar(daily_volume, x="Date", y="Volume", 
+                 title="📅 Consistency Streak (Don't Break The Chain)", template="plotly_dark")
+    fig3.show()
+
+    print("✅ Full Dashboard V3.0 Generated!")
     import time
     time.sleep(5)
 
