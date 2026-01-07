@@ -5,7 +5,7 @@ import os
 
 # --- INTELLIGENT PATH FINDING ---
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-FILE_PATH = os.path.join(SCRIPT_DIR, 'Master_Data.xlsx')
+FILE_PATH = os.path.join(SCRIPT_DIR, 'Master_Data.xlsm')
 
 def calculate_readiness(daily_df):
     if daily_df.empty: return 50, "Unknown"
@@ -31,7 +31,7 @@ def calculate_readiness(daily_df):
     return score, mission
 
 def analyze_performance():
-    print(f"\n🚀 LAUNCHING V10.0 UNIFIED COCKPIT...")
+    print(f"\n🚀 LAUNCHING V1.0 UNIFIED COCKPIT...")
     
     # 1. Load Data
     try:
@@ -90,7 +90,6 @@ def analyze_performance():
         row=1, col=1)
 
     # 2. BLUEPRINT (Row 1, Col 2)
-    # Using a clever "Table" approach for the blueprint to make it readable in the grid
     fig.add_trace(go.Table(
         header=dict(values=['Metric', 'Target', 'Action'], fill_color='grey', align='left'),
         cells=dict(values=[
@@ -102,7 +101,7 @@ def analyze_performance():
 
     # 3. STRENGTH TREND (Row 2, Col 1)
     fig.add_trace(go.Scatter(x=merged['Date'], y=merged['1RM_Est'], mode='markers', 
-                             marker=dict(size=merged['RPE']*1.5, color=merged['Volume'], colorscale='Viridis'),
+                             marker=dict(size=12, color=merged['Volume'], colorscale='Viridis'),
                              name='Strength'), row=2, col=1)
 
     # 4. CONSISTENCY (Row 2, Col 2)
@@ -120,8 +119,8 @@ def analyze_performance():
 
     # --- 🎨 FINAL POLISH ---
     fig.update_layout(height=1000, width=1500, template="plotly_dark", showlegend=False,
-                      title_text="<b>🚀 BIO-OPTIMIZATION COMMAND CENTER</b>")
-    
+                      title_text="<b>🚀 BIO-OPTIMIZATION COMMAND CENTER</b>", title_x=0.5, margin=dict(t=150, b=50, l=50, r=50), grid=dict(rows=3, columns=2, pattern='independent'))
+    fig.update_polars(radialaxis_tickfont_size=10, angularaxis_tickfont_size=12)
     fig.show()
     print("✅ COCKPIT LOADED.")
 
